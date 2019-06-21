@@ -1,16 +1,11 @@
-const fs = require('fs')
-const path = require('path')
 const express = require('express')
-const bodyParser = require('body-parser')
 const router = express.Router()
-const sha1 = require('sha1')
+const md5 = require('md5-node')
 const rtnData = require('../lib/rtnData')
 
 const UserModel = require('../models/UserModel')
 
-const jsonParser = bodyParser.json()
-
-router.post('/', jsonParser, function (req, res, next) {
+router.post('/', function (req, res, next) {
   const userName = req.body.userName // 用户名
   const password = req.body.password // 密码
   const repassword = req.body.repassword // 重复确认密码
@@ -35,13 +30,11 @@ router.post('/', jsonParser, function (req, res, next) {
     } else if (user) {
       res.send(rtnData('100001', null, '用户名已存在'))
     } else {
-      // 密码加密
-      password = sha1(password)
 
       // 待写入数据库的用户信息
       let user = {
         userName: userName,
-        password: password,
+        password: md5(password),
         gender: gender,
         description: description
       }
