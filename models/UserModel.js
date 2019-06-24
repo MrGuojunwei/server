@@ -1,12 +1,19 @@
-const { User } = require('../lib/mongoose')
+const mongoose = require('mongoose')
+const path = require('path')
+const config = require('config-lite')(path.join(__dirname, '..'))
 
-module.exports = {
-  // 注册一个用户
-  create: function create(user, cb) {
-    return User.create(user, cb)
-  },
-  // 根据用户名获取用户信息
-  getUserByName: function getUserByName(userName) {
-    return User.findOne({ userName: userName })
-  }
-}
+const Schema = mongoose.Schema
+
+mongoose.connect(config.mongodb)
+
+const UserSchema = new Schema({
+  userName: { type: String },
+  password: { type: String },
+  gender: { type: String, enum: ['m', 'f', 'x'] },
+  description: { type: String, required: true },
+  createTime: {type: Date, default: new Date()}
+})
+
+const User = mongoose.model('User', UserSchema)
+
+module.exports = User
